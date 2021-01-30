@@ -32,6 +32,8 @@ class _MapaPageState extends State<MapaPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           BtnUbicacion(),
+          BtnSeguirUbicacion(),
+          BtnMiRuta(),
         ],
       ),
     );
@@ -41,6 +43,7 @@ class _MapaPageState extends State<MapaPage> {
     if (!state.exiteUbicacion) return Center(child: Text('Ubicando ...'));
 
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
+    mapaBloc.add(OnNuevaUbicacion(state.ubicacion));
     // return Center(
     //     child:
     //         Text('${state.ubicacion.latitude} , ${state.ubicacion.longitude}'));
@@ -49,7 +52,8 @@ class _MapaPageState extends State<MapaPage> {
       target: state.ubicacion,
       zoom: 18,
     );
-
+    final destino = state.ubicacion;
+    mapaBloc.moverCamara(destino);
     return GoogleMap(
       mapType: MapType.normal,
       initialCameraPosition: _kGooglePlex,
@@ -62,6 +66,12 @@ class _MapaPageState extends State<MapaPage> {
       //    mapaBloc.initMapa(controller),
       // Las dos lineas de arriba se pueden reducir a :
       onMapCreated: mapaBloc.initMapa,
+      polylines: mapaBloc.state.polylines.values.toSet(),
+      onCameraMove: (cameraPosition) {
+        // camera Postition.target= LatLng central del mapa
+        mapaBloc.add(OnMovioMapa(cameraPosition.target));
+      },
+      onCameraIdle: () {},
     );
   }
 }
