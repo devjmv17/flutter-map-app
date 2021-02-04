@@ -26,8 +26,14 @@ class _MapaPageState extends State<MapaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
-          builder: (context, state) => crearMapa(state)),
+      body: Stack(
+        children: [
+          BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
+              builder: (context, state) => crearMapa(state)),
+          Positioned(top: 10, child: SearchBar()),
+          MarcadorManual(),
+        ],
+      ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -50,28 +56,33 @@ class _MapaPageState extends State<MapaPage> {
     final CameraPosition _kGooglePlex = CameraPosition(
       //target: LatLng(37.42796133580664, -122.085749655962),
       target: state.ubicacion,
-      zoom: 18,
+      zoom: 17,
     );
     final destino = state.ubicacion;
     mapaBloc.moverCamara(destino);
-    return GoogleMap(
-      mapType: MapType.normal,
-      initialCameraPosition: _kGooglePlex,
-      compassEnabled: true,
-      myLocationButtonEnabled: false,
-      myLocationEnabled: true,
-      zoomControlsEnabled: false,
 
-      //onMapCreated: (GoogleMapController controller) =>
-      //    mapaBloc.initMapa(controller),
-      // Las dos lineas de arriba se pueden reducir a :
-      onMapCreated: mapaBloc.initMapa,
-      polylines: mapaBloc.state.polylines.values.toSet(),
-      onCameraMove: (cameraPosition) {
-        // camera Postition.target= LatLng central del mapa
-        mapaBloc.add(OnMovioMapa(cameraPosition.target));
+    return BlocBuilder<MapaBloc, MapaState>(
+      builder: (context, state) {
+        return GoogleMap(
+          mapType: MapType.normal,
+          initialCameraPosition: _kGooglePlex,
+          compassEnabled: true,
+          myLocationButtonEnabled: false,
+          myLocationEnabled: true,
+          zoomControlsEnabled: false,
+
+          //onMapCreated: (GoogleMapController controller) =>
+          //    mapaBloc.initMapa(controller),
+          // Las dos lineas de arriba se pueden reducir a :
+          onMapCreated: mapaBloc.initMapa,
+          polylines: mapaBloc.state.polylines.values.toSet(),
+          onCameraMove: (cameraPosition) {
+            // camera Postition.target= LatLng central del mapa
+            mapaBloc.add(OnMovioMapa(cameraPosition.target));
+          },
+          onCameraIdle: () {},
+        );
       },
-      onCameraIdle: () {},
     );
   }
 }

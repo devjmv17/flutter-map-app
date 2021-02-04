@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_mapa_app/src/bloc/busqueda/busqueda_bloc.dart';
 import 'package:flutter_mapa_app/src/bloc/mapa/mapa_bloc.dart';
 import 'package:flutter_mapa_app/src/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
 import 'package:flutter_mapa_app/src/pages/acceso_gps_page.dart';
@@ -18,6 +19,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => MapaBloc(),
+        ),
+        BlocProvider(
+          create: (context) => BusquedaBloc(),
         )
       ],
       child: MaterialApp(
